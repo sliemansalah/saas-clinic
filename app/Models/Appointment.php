@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Appointment extends Model
 {
@@ -20,5 +21,14 @@ class Appointment extends Model
         // نستخدم belongsTo لأن الموعد "ينتمي إلى" عيادة محددة
         return $this->belongsTo(Tenant::class);
     }
+
+        /**
+     * الموعد الواحد/المريض يمكن أن يشرف عليه أكثر من طبيب في نفس الوقت
+     */
+    public function doctors(): BelongsToMany
+    {
+        return $this->belongsToMany(Doctor::class);
+    }
+
 
 }

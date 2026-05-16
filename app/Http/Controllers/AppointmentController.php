@@ -87,10 +87,6 @@ class AppointmentController extends Controller
 
         // ========================================================
 
-        // تصفير الكاش القديم لإجبار النظام على تحديث البيانات
-        Cache::forget('all_tenants');
-        Cache::forget('all_doctors');
-
         // 4. إطلاق الـ Job في طابور الخلفية الآمن (Queue)
         $preference = $data['notification_preference'];
         $message = "مرحبًا {$appointment->patient_name}، تم تأكيد موعدك بنجاح.";

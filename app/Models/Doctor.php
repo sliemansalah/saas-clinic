@@ -17,4 +17,11 @@ class Doctor extends Model
         // نستخدم belongsToMany للربط الشبكي متعدد لمتعدد
         return $this->belongsToMany(Appointment::class);
     }
+
+    public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+
 }

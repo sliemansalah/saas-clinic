@@ -6,6 +6,7 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Appointment extends Model
 {
@@ -29,6 +30,18 @@ class Appointment extends Model
     {
         return $this->belongsToMany(Doctor::class);
     }
+
+
+    /**
+     * جلب جميع الملاحظات الخاصة بهذا الموعد
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        // نستخدم morphMany لأن الموعد يمكن أن يملك "كثير" من الملاحظات متعددة الأشكال
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+
 
 
 }

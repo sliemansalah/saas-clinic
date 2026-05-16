@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Tenant extends Model
 {
     protected $fillable = ['name', 'domain', 'notification_preference'];
@@ -17,4 +17,14 @@ class Tenant extends Model
         // نستخدم hasMany لأن العيادة تملك "كثير" من المواعيد
         return $this->hasMany(Appointment::class);
     }
+
+    /**
+     * جلب جميع الملاحظات الخاصة بهذه العيادة (مثلاً ملاحظات إدارية)
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+
 }

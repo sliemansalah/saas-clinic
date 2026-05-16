@@ -25,7 +25,7 @@ class AppointmentController extends Controller
             'patient_name' => 'required|string|max:255',
             'patient_phone' => 'required|string',
             'appointment_date' => 'required|date',
-            'notification_preference' => 'required|string|in:sms,whatsapp', // 👈 التحقق من القيمة الجديدة
+            'notification_preference' => 'required|string|in:sms,whatsapp,in_app', // 👈 التحقق من القيمة الجديدة
         ]);
 
         // حفظ الموعد

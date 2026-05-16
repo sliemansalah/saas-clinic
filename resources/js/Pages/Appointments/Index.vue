@@ -12,6 +12,7 @@
   <select v-model="form.notification_preference" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500">
     <option value="sms">📨 رسالة نصية (SMS)</option>
     <option value="whatsapp">🟢 واتساب (WhatsApp)</option>
+    <option value="in_app">🔔 داخل التطبيق (In-App)</option> <!-- 👈 خيار ثالث للعيادة -->
   </select>
 </div>
 

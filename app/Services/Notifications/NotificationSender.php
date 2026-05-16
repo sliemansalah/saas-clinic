@@ -5,6 +5,7 @@ namespace App\Services\Notifications;
 use App\Services\Notifications\Strategies\NotificationStrategy;
 use App\Services\Notifications\Strategies\SmsStrategy;
 use App\Services\Notifications\Strategies\WhatsappStrategy;
+use App\Services\Notifications\Strategies\InAppStrategy;
 
 class NotificationSender
 {
@@ -16,6 +17,7 @@ class NotificationSender
         $this->strategy = match ($preference) {
             'sms' => new SmsStrategy(),
             'whatsapp' => new WhatsappStrategy(),
+            'in_app' => new InAppStrategy(),
             default => new SmsStrategy(),
         };
 

@@ -37,9 +37,15 @@ class AppointmentController extends Controller
         // إرسال الإشعار باستخدام الستراتيجية المفضلة المخزنة في الجلسة للعيادة الحالية
         $preference = $data['notification_preference'];
         $message = "مرحبًا {$appointment->patient_name}، تم تأكيد موعدك بنجاح بتاريخ {$appointment->appointment_date}.";
-        
-        $sender->setStrategy($preference)->send($appointment->patient_phone, $message);
 
+        // $sender->setStrategy($preference)->send($appointment->patient_phone, $message);
+        // 🚀 الكود الجديد الاحترافي: إطلاق المهمة في الخلفية دون جعل المستخدم ينتظر ثانية واحدة!
+        \App\Jobs\SendAppointmentNotificationJob::dispatch(
+            $appointment->patient_phone, 
+            $message, 
+            $preference
+        );
+        
         return redirect()->back()->with('success', 'تم حجز الموعد بنجاح وتنبيه المريض!');
     }
 }

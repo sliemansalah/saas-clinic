@@ -10,24 +10,38 @@ use Inertia\Inertia;
 class AppointmentController extends Controller
 {
     public function index()
-    {
-        // جلب مواعيد العيادة الحالية فقط بفضل الـ Global Scope التلقائي
-        $appointments = Appointment::latest()->get();
-        
-        return Inertia::render('Appointments/Index', [
-            'appointments' => $appointments
-        ]);
-    }
+{
+    // 💡 ميزة احترافية: نقوم بتعطيل الـ Global Scope هنا مؤقتًا لرؤية جميع مواعيد كل العيادات في صفحة الإدارة
+    $appointments = Appointment::withoutGlobalScope(\App\Models\Scopes\TenantScope::class)
+                                ->with('tenant')
+                                ->latest()
+                                ->get(); 
+
+    // جلب قائمة بكل العيادات ليختار منها المستخدم في الفرونت إند
+    $tenants = \DB::table('tenants')->get();
+    
+    return Inertia::render('Appointments/Index', [
+        'appointments' => $appointments,
+        'tenants' => $tenants // 👈 تمرير العيادات للـ Vue
+    ]);
+}
+
 
     public function store(Request $request, NotificationSender $sender)
     {
         $data = $request->validate([
+            'tenant_id' => 'required|exists:tenants,id', // 👈 التأكد من أن العيادة المختارة موجودة فعليًا
             'patient_name' => 'required|string|max:255',
             'patient_phone' => 'required|string',
             'appointment_date' => 'required|date',
             'notification_preference' => 'required|string|in:sms,whatsapp,in_app', // 👈 التحقق من القيمة الجديدة
         ]);
 
+          // 💡 حيلة احترافية: نضع معرف العيادة المختارة في الـ session لكي يقرأها الـ Trait والـ Job تلقائيًا
+    session(['tenant_id' => $data['tenant_id']]);
+    session(['tenant_preference' => $data['notification_preference']]);
+
+        
         // حفظ الموعد
   $appointment = Appointment::create([
         'patient_name' => $data['patient_name'],
@@ -45,7 +59,7 @@ class AppointmentController extends Controller
             $message, 
             $preference
         );
-        
+
         return redirect()->back()->with('success', 'تم حجز الموعد بنجاح وتنبيه المريض!');
     }
 }

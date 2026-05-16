@@ -17,6 +17,18 @@
 </div>
 
         <form @submit.prevent="submit" class="space-y-4">
+          <!-- ضع هذا الحقل كأول حقل داخل الـ <form> مباشرة -->
+<div>
+  <label class="block text-sm font-medium text-gray-600">اختر العيادة المستهدفة</label>
+  <select v-model="form.tenant_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500" required>
+    <option value="" disabled>-- اضغط لاختيار العيادة --</option>
+    <!-- دوران عبر الـ tenants وتوليد الخيارات ديناميكيًا -->
+    <option v-for="tenant in tenants" :key="tenant.id" :value="tenant.id">
+      🏢 {{ tenant.name }}
+    </option>
+  </select>
+</div>
+
           <div>
             <label class="block text-sm font-medium text-gray-600">اسم المريض</label>
             <input v-model="form.patient_name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500" required />
@@ -44,6 +56,7 @@
               <tr class="border-b text-gray-400 text-sm">
                 <th class="pb-2">اسم المريض</th>
                 <th class="pb-2">رقم الهاتف</th>
+                <th class="pb-2">اسم العيادة</th>
                 <th class="pb-2">تاريخ الموعد</th>
               </tr>
             </thead>
@@ -51,6 +64,9 @@
               <tr v-for="app in appointments" :key="app.id" class="hover:bg-gray-50">
                 <td class="py-3 font-medium">{{ app.patient_name }}</td>
                 <td class="py-3">{{ app.patient_phone }}</td>
+                  <!-- 👈 العمود الجديد: عرض اسم العيادة من خلال العلاقة المستدعاة -->
+                  <td class="py-3 text-blue-600 font-semibold">{{ app.tenant ? app.tenant.name : 'عيادة عامة' }}</td>
+
                 <td class="py-3 text-left" dir="ltr">{{ new Date(app.appointment_date).toLocaleString('ar-EG') }}</td>
               </tr>
               <tr v-if="appointments.length === 0">
@@ -68,22 +84,24 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 
-// استلام المواعيد الممررة تلقائيًا من متحكم لارافيل عبر Inertia
+// استقبال المواعيد وقائمة العيادات من السيرفر
 defineProps({
-  appointments: Array
+  appointments: Array,
+  tenants: Array // 👈 القائمة الجديدة القادمة من الـ Controller
 })
 
-// إعداد كود النموذج التفاعلي بالاستعانة بـ Inertia Form Helper
+
 const form = useForm({
+  tenant_id: '', // 👈 متغير جديد لحفظ معرف العيادة المختارة
   patient_name: '',
   patient_phone: '',
   appointment_date: '',
-  notification_preference: 'sms' // 👈 القيمة الافتراضية المحددة في القائمة
+  notification_preference: 'sms'
 })
 
 const submit = () => {
   form.post(route('appointments.store'), {
-    onSuccess: () => form.reset(), // تفريغ الحقول عند النجاح تلقائيًا
+    onSuccess: () => form.reset('patient_name', 'patient_phone', 'appointment_date'), 
   })
 }
 </script>

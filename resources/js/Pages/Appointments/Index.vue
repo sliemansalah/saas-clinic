@@ -6,6 +6,15 @@
       <!-- أولاً: نموذج إضافة موعد جديد -->
       <div class="bg-white p-6 rounded-xl shadow-sm h-fit">
         <h2 class="text-lg font-bold mb-4 text-gray-800">حجز موعد جديد</h2>
+        <!-- ضع هذا الكود داخل الـ <form> قبل حقل الزر مباشرة -->
+<div>
+  <label class="block text-sm font-medium text-gray-600">وسيلة التذكير المفضلة</label>
+  <select v-model="form.notification_preference" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50 focus:ring-blue-500">
+    <option value="sms">📨 رسالة نصية (SMS)</option>
+    <option value="whatsapp">🟢 واتساب (WhatsApp)</option>
+  </select>
+</div>
+
         <form @submit.prevent="submit" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-600">اسم المريض</label>
@@ -67,7 +76,8 @@ defineProps({
 const form = useForm({
   patient_name: '',
   patient_phone: '',
-  appointment_date: ''
+  appointment_date: '',
+  notification_preference: 'sms' // 👈 القيمة الافتراضية المحددة في القائمة
 })
 
 const submit = () => {
